@@ -11,6 +11,7 @@ export interface IPlatform {
 export interface IGame {
     id: number;
     name: string;
+    metacritic: number;
     background_image: string;
     parent_platforms: { platform: IPlatform }[];
 }
