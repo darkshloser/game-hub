@@ -24,21 +24,27 @@ interface IFetchGamesResponse {
 const useGames = () => {
     const [games, setGames] = useState<IGame[]>([]);
     const [error, setError] = useState("");
+    const [isLoading, setLoading] = useState(false);
 
     useEffect(() => {
         const controller = new AbortController();
+        setLoading(true);
         apiClient
             .get<IFetchGamesResponse>("/games", { signal: controller.signal })
-            .then((res) => setGames(res.data.results))
+            .then((res) => {
+                setGames(res.data.results);
+                setLoading(false);
+            })
             .catch((err) => {
                 if (err instanceof CanceledError) return;
                 setError(err.message);
+                setLoading(false); // we need to put twice setloading because it's not working from `finally`when we're at a `strict` mode
             });
 
         return () => controller.abort();
     }, []);
 
-    return { games, error };
+    return { games, error, isLoading };
 };
 
 export default useGames;
